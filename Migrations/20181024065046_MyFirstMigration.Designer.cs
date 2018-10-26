@@ -9,8 +9,8 @@ using QuizRT.Models;
 namespace QuizRTapi.Migrations
 {
     [DbContext(typeof(QuizRTContext))]
-    [Migration("20181015091643_UpdateTemplateTable2")]
-    partial class UpdateTemplateTable2
+    [Migration("20181024065046_MyFirstMigration")]
+    partial class MyFirstMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace QuizRTapi.Migrations
 {
-    public partial class CreateQuestion : Migration
+    public partial class MyFirstMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -20,6 +20,24 @@ namespace QuizRTapi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_QuestionsT", x => x.QuestionsId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "QuizRTTemplateT",
+                columns: table => new
+                {
+                    TempId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Text = table.Column<string>(nullable: true),
+                    SparQL = table.Column<string>(nullable: true),
+                    Categ = table.Column<string>(nullable: true),
+                    CategName = table.Column<string>(nullable: true),
+                    Topic = table.Column<string>(nullable: true),
+                    TopicName = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_QuizRTTemplateT", x => x.TempId);
                 });
 
             migrationBuilder.CreateTable(
@@ -53,6 +71,9 @@ namespace QuizRTapi.Migrations
         {
             migrationBuilder.DropTable(
                 name: "OptionsT");
+
+            migrationBuilder.DropTable(
+                name: "QuizRTTemplateT");
 
             migrationBuilder.DropTable(
                 name: "QuestionsT");

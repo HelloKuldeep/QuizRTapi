@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using QuizRT.Models;
+using Newtonsoft.Json.Linq;
 
 namespace QuizRTapi.Controllers
 {
@@ -16,55 +17,40 @@ namespace QuizRTapi.Controllers
             this.quizRTRepo = _quizRTRepo;
         }
         // GET api/values
-        [HttpGet]
-        // public List<QuizRTTemplate> Get(){
-        //     List<QuizRTTemplate> Lqt = quizRTRepo.GetTemplate();
-        //     if( Lqt.Count > 0 )
-        //         return Lqt;
-        //     return new List<QuizRTTemplate>();
-        // }
-        public IActionResult Get(){
-            List<QuizRTTemplate> Lqt = quizRTRepo.GetTemplate();
-            if( Lqt.Count > 0 )
-                return Ok(Lqt);
-            return NotFound("Empty Database");
-        }
-
-        // GET api/values/5
-        [HttpGet("{id:int}")]
-        public IActionResult Get(int id){
-            List<Questions> Lqt = quizRTRepo.GetQuestion();
-            if( Lqt.Count > 0 )
-                return Ok(Lqt);
-            return NotFound("Empty Database");
-        }
-        [HttpGet("{searchstring}")]
-        public IActionResult Get(string searchstring, [FromQuery] string type ){
-            List<Options> Lo = quizRTRepo.GetOption();
-            if( Lo.Count > 0 )
-                return Ok(Lo);
+        [HttpGet("{variable}")]
+        public IActionResult Get(string variable){
+            if ( variable == "template" ) {
+                List<QuizRTTemplate> Lqt = quizRTRepo.GetTemplate();
+                if( Lqt.Count > 0 )
+                    return Ok(Lqt);
+            } else if ( variable == "question" ) {
+                List<Questions> Lq = quizRTRepo.GetQuestion();
+                if( Lq.Count > 0 )
+                    return Ok(Lq);
+            } else if ( variable == "option" ) {
+                List<Options> Lo = quizRTRepo.GetOption();
+                if( Lo.Count > 0 )
+                    return Ok(Lo);
+            }
             return NotFound("Empty Database");
         }
 
         // POST api/values
         [HttpPost]
-        // public QuizRTTemplate Post([FromBody] QuizRTTemplate q){
-        //     if(quizRTRepo.PostTemplate(q)){
-        //         return q;
-        //     }
-        //     return new QuizRTTemplate();
-        // }
-        public IActionResult Post([FromBody] QuizRTTemplate q){
-            if(quizRTRepo.PostTemplate(q)){
+        public IActionResult Post([FromBody] Object q){
+            if( quizRTRepo.PostQuery(q) ){
                 return Created("/api/quizrt",q);
             }
             return BadRequest("Database Error!!");
         }
+        [HttpPost("{id}")]
+        public void Post(int id, [FromBody] Questions q){
+            quizRTRepo.PostTemplate(q);
+        }
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
+        public void Put(int id, [FromBody] Questions q){
         }
 
         // DELETE api/values/5
