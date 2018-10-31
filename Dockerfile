@@ -5,8 +5,9 @@ WORKDIR /app
 COPY *.csproj ./
 RUN dotnet restore
 
-RUN dotnet build
+# RUN dotnet build
 EXPOSE 80/tcp
+FROM microsoft/mssql-server-linux
 RUN dotnet ef database update
 RUN dotnet run --server.urls http://*:80
 
