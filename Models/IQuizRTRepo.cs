@@ -8,6 +8,7 @@ namespace QuizRT.Models{
         bool PostQuery(Object q);
         bool PostTemplate(Questions q);
         void DeleteTemplate();
+        List<Questions> GetQuestion_directly(QuizRTTemplate q);
 
     }
 }

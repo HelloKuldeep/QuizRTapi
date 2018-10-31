@@ -44,8 +44,11 @@ namespace QuizRTapi.Controllers
             return BadRequest("Database Error!!");
         }
         [HttpPost("{id}")]
-        public void Post(int id, [FromBody] Questions q){
-            quizRTRepo.PostTemplate(q);
+        public IActionResult Post(int id, [FromBody] QuizRTTemplate q){
+           Console.WriteLine("hhhhhhh");
+           List<Questions> all_data =  quizRTRepo.GetQuestion_directly(q);
+           return Ok(all_data);
+           // return Lq;
         }
 
         // PUT api/values/5

@@ -27,4 +27,5 @@ namespace QuizRT.Models{
         public int QuestionsId { get; set; }
     }
 
+
 }

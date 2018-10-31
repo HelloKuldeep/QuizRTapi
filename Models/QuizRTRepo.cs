@@ -28,6 +28,65 @@ namespace QuizRT.Models{
         public List<Options> GetOption(){
             return context.OptionsT.ToList();
         }
+
+        public List<Questions> GetQuestion_directly(QuizRTTemplate template)
+       {
+           List<Questions> g_question_notable = new List<Questions>();
+           Task<string> id= Gettopic_id("https://www.wikidata.org/w/api.php?action=wbsearchentities&search="+template.TopicName+"&language=en&format=json");
+           string f_id = id.Result;
+           string sparQL = "SELECT ?personLabel WHERE { ?person wdt:P106 wd:"+f_id+" . SERVICE wikibase:label { bd:serviceParam wikibase:language 'en' . } }";
+           Task<List<string>> questions = GetQuestionData(sparQL);
+           List<string> all_questions_without_tables = questions.Result;
+           Task<List<string>> options= GetOptionData("SELECT ?cid ?options WHERE {?cid wdt:P31 wd:Q28640. OPTIONAL {?cid rdfs:label ?options filter (lang(?options) = 'en') . }}Limit 100");
+           List<string> all_options = options.Result;
+           for(int i=0;i<all_questions_without_tables.Count;i++)
+           {
+               Questions s_object = new Questions();
+               s_object.QuestionGiven="What is "+all_questions_without_tables[i]+" Occupation ?";
+               List<Options> mut_options_single_q = randomizeOptions(all_options,template.TopicName);
+               s_object.QuestionOptions=mut_options_single_q;
+               g_question_notable.Add(s_object);
+           }
+           return g_question_notable;
+           // Console.WriteLine(all_options+"opopop");
+           // Console.WriteLine(all_questions_without_tables+"qqqqq");
+
+       }
+
+       public List<Options> randomizeOptions(List<string> optionReviewList,string topic_name){
+           List<string> other_options = new List<string>();
+           List<Options> g_List_options_notable = new List<Options>();
+           List<int> randomNumber = getRandonNumber(0, optionReviewList.Count-1, optionNumber-1);
+           for(int i=0; i < randomNumber.Count ; ) {
+               Options g_options_notable_f = new Options();
+               g_options_notable_f.OptionGiven=optionReviewList[randomNumber[i]];
+               g_options_notable_f.IsCorrect=false;
+               g_List_options_notable.Add(g_options_notable_f); 
+               i++;
+           }
+           Options g_options_notable = new Options();
+               g_options_notable.OptionGiven=topic_name;
+               g_options_notable.IsCorrect=true;
+               g_List_options_notable.Add(g_options_notable);  
+           return g_List_options_notable;
+       }
+
+       async Task<string> Gettopic_id(string sparQL){
+           //string baseUrl = "https://query.wikidata.org/sparql?query="+sparQL+"&format=json";
+           //The 'using' will help to prevent memory leaks.
+           //Create a new instance of HttpClient
+           using (HttpClient client = new HttpClient())
+           //Setting up the response...
+           using (HttpResponseMessage res = await client.GetAsync(sparQL))
+           using (HttpContent content = res.Content){
+               string data = await content.ReadAsStringAsync();
+               // JObject data = await content.ReadAsAsync<JObject>();
+               JObject json = JObject.Parse(data);
+               JArray J = (JArray)json["search"];
+               string str = (string)J[0]["id"];
+               return str;
+           }
+       }
         public bool PostQuery(Object q){
             JObject jo = (JObject)(q);
             string categId = jo["categ"].ToString();
