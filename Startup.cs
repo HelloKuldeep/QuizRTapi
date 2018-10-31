@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 using QuizRT.Models;
 
 namespace QuizRTapi
@@ -29,12 +30,19 @@ namespace QuizRTapi
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddScoped<IQuizRTRepo,QuizRTRepo>();
 
-            var hostname = Environment.GetEnvironmentVariable("SQLSERVER_HOST") ?? "localhost";
-            var password = Environment.GetEnvironmentVariable("SQLSERVER_SA_PASSWORD") ?? "Testing123";
-            var connString = $"Data Source={hostname};Initial Catalog=KontenaAspnetCore;User ID=sa;Password={password};";
-            services.AddDbContext<QuizRTContext>(options => options.UseSqlServer(connString));
-    
-            // services.AddDbContext<QuizRTContext>(); //Earlier Before Docker
+            // Database connection string.
+            // Make sure to update the Password value below from "Your_password123" to your actual password.
+            var connection = @"Server=db;Database=master;User=sa;Password=Your_password123;";
+            // This line uses 'UseSqlServer' in the 'options' parameter
+            // with the connection string defined above.
+            services.AddDbContext<QuizRTContext>(options => options.UseSqlServer(connection));
+
+            // var hostname = Environment.GetEnvironmentVariable("SQLSERVER_HOST") ?? "localhost";
+            // var password = Environment.GetEnvironmentVariable("SQLSERVER_SA_PASSWORD") ?? "Testing123";
+            // var connString = $"Data Source={hostname};Initial Catalog=KontenaAspnetCore;User ID=sa;Password={password};";
+            // services.AddDbContext<QuizRTContext>(options => options.UseSqlServer(connString));
+
+            // services.AddDbContext<QuizRTContext>(); // Before Docker
             services.AddCors(); // adding CORS service for use in  Configure fn *hellokuldeep
         }
 

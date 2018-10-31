@@ -17,9 +17,9 @@ namespace QuizRTapi
             CreateWebHostBuilder(args).Build().Run();
 
             // For Docker
-            var host = new WebHostBuilder()
-                        .UseUrls("https://*:5000")
-                        .UseKestrel();
+            // var host = new WebHostBuilder()
+            //             .UseUrls("https://*:5000")
+            //             .UseKestrel();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
