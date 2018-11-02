@@ -42,7 +42,13 @@ namespace QuizRTapi
             // var connString = $"Data Source={hostname};Initial Catalog=KontenaAspnetCore;User ID=sa;Password={password};";
             // services.AddDbContext<QuizRTContext>(options => options.UseSqlServer(connString));
 
-            services.AddDbContext<QuizRTContext>(); // Before Docker
+            var hostname = Environment.GetEnvironmentVariable("SQLSERVER_HOST");
+            if(string.IsNullOrEmpty(hostname)){
+                hostname = Configuration.GetConnectionString("QuizRTTest");
+            }
+            services.AddDbContext<QuizRTContext>(options => options.UseSqlServer(hostname));
+
+            // services.AddDbContext<QuizRTContext>(); // Before Docker
             services.AddCors(); // adding CORS service for use in  Configure fn *hellokuldeep
         }
 
