@@ -1,3 +1,7 @@
+/// <summary>
+/// Implementing DBContext to create table, implement query
+/// string and establish foreign relations between tables
+/// </summary>
 using Microsoft.EntityFrameworkCore;
 namespace QuizRT.Models{
     public class QuizRTContext : DbContext {
