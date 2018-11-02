@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace QuizRTapi.Migrations
 {
-    public partial class MyFirstMigration : Migration
+    public partial class newsqlmigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

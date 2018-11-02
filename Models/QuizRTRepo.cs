@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace QuizRT.Models{
     public class QuizRTRepo : IQuizRTRepo {
         string sparQL = "";
-        int NumberOfQuestions = 10000000;
+        int NumberOfQuestions = 100;
         int optionNumber = 3;
         List<string> quesReviewList = new List<string>();
         List<string> optionReviewList = new List<string>();
@@ -93,6 +93,7 @@ namespace QuizRT.Models{
             string topicId = jo["topic"].ToString();
             string categName = jo["categName"].ToString();
             string topicName = jo["topicName"].ToString();
+            // Console.WriteLine("--------"+categName);
             if( context.QuizRTTemplateT.FirstOrDefault( n => n.Categ == categId) == null ){
                 QuizRTTemplate qT = new QuizRTTemplate();
                 qT.Categ = categId;

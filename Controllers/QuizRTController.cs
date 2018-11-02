@@ -45,7 +45,6 @@ namespace QuizRTapi.Controllers
         }
         [HttpPost("{id}")]
         public IActionResult Post(int id, [FromBody] QuizRTTemplate q){
-           Console.WriteLine("hhhhhhh");
            List<Questions> all_data =  quizRTRepo.GetQuestion_directly(q);
            return Ok(all_data);
            // return Lq;
