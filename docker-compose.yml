@@ -6,6 +6,8 @@ services:
             - "8000:80"
         depends_on:
             - db
+        links:
+            - db
     db:
         image: "microsoft/mssql-server-linux"
         environment:
