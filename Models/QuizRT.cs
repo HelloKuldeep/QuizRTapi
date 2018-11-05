@@ -26,6 +26,8 @@ namespace QuizRT.Models{
         public bool IsCorrect { get; set; }
         public int QuestionsId { get; set; }
     }
-
-
+    public class universal_object{
+        public string mainobject {get;set;}
+        public string predicate {get;set;}
+    }
 }

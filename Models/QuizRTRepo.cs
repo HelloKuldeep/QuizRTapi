@@ -104,8 +104,13 @@ namespace QuizRT.Models{
                 context.SaveChanges();
 
                 if( context.QuestionsT.FirstOrDefault( n => n.Categ == categId) == null ){
-                    if ( GenerateQuestion(qT) && GenerateOptions(qT) ) 
-                        return true;
+                    if(qT.CategName == "Occupation"){
+                        if ( GenerateQuestion(qT) && GenerateOptions(qT) ) 
+                            return true;
+                    } else {
+                        if( GenerateQuestion(qT) )
+                            return true;
+                    }
                 }
                 return true;
             }
@@ -146,21 +151,152 @@ namespace QuizRT.Models{
         // ------------------------
 
         public bool GenerateQuestion(QuizRTTemplate q) {
-            sparQL = "SELECT ?personLabel WHERE { ?person wdt:"+q.Topic+" wd:"+q.Categ+" . SERVICE wikibase:label { bd:serviceParam wikibase:language 'en' . } }LIMIT "+NumberOfQuestions+"";
-            Task<List<string>> dataReturns = System.Threading.Tasks.Task<string>.Run(() => GetQuestionData(sparQL).Result);
-            List<string> quesReviewList = dataReturns.Result;
+            if(q.CategName == "Occupation"){
+                sparQL = "SELECT ?personLabel WHERE { ?person wdt:"+q.Topic+" wd:"+q.Categ+" . SERVICE wikibase:label { bd:serviceParam wikibase:language 'en' . } }LIMIT "+NumberOfQuestions+"";
+                Task<List<string>> dataReturns = System.Threading.Tasks.Task<string>.Run(() => GetQuestionData(sparQL).Result);
+                List<string> quesReviewList = dataReturns.Result;
 
-            List<Questions> qL = new List<Questions>();
-            for(int i=0; i<quesReviewList.Count; i++){
-                Questions ques = new Questions();
-                ques.QuestionGiven = "What is "+quesReviewList[i]+" "+q.TopicName+"?";
-                ques.Topic = q.TopicName;
-                ques.Categ = q.CategName;
-                qL.Add(ques);
+                List<Questions> qL = new List<Questions>();
+                for(int i=0; i<quesReviewList.Count; i++){
+                    Questions ques = new Questions();
+                    ques.QuestionGiven = "What is "+quesReviewList[i]+" "+q.TopicName+"?";
+                    ques.Topic = q.TopicName;
+                    ques.Categ = q.CategName;
+                    qL.Add(ques);
+                }
+                context.QuestionsT.AddRange(qL);
+                context.SaveChanges();
+                return true;
             }
-            context.QuestionsT.AddRange(qL);
-            context.SaveChanges();
-            return true;
+            else if( q.CategName != "Occupation" ){
+                //List<string> other_options = new List<string>();
+                Task<string> id= Gettopic_id("https://www.wikidata.org/w/api.php?action=wbsearchentities&search="+q.TopicName+"&language=en&format=json");
+                string f_id = id.Result;
+                if(q.CategName=="Book")
+                sparQL = "SELECT ?cidLabel ?authortitleLabel WHERE {?cid wdt:P31 wd:"+f_id+".?cid wdt:P50 ?authortitle .SERVICE wikibase:label { bd:serviceParam wikibase:language 'en' . }}Limit 10";
+                
+                else if(q.CategName=="princely state of the British Raj")
+                {
+                sparQL = "SELECT ?cidLabel ?authortitleLabel WHERE {?cid wdt:P31 wd:Q1336152 . ?cid wdt:P17 ?authortitle .SERVICE wikibase:label { bd:serviceParam wikibase:language 'en' . }}Limit 10";
+                Console.WriteLine("rajjjjj");
+                }
+                 else if(q.CategName=="state of the United States")
+                sparQL = "SELECT ?cidLabel ?authortitleLabel WHERE {?cid wdt:P31 wd:"+q.Topic+".?cid wdt:P138 ?authortitle .SERVICE wikibase:label { bd:serviceParam wikibase:language 'en' . }}Limit 10";
+
+                 else if(q.CategName=="business")
+                sparQL = "SELECT ?cidLabel ?authortitleLabel WHERE {?cid wdt:P31 wd:"+q.Topic+".?cid wdt:P571 ?authortitle .SERVICE wikibase:label { bd:serviceParam wikibase:language 'en' . }}Limit 10";
+
+                 else if(q.CategName!="princely state of the British Raj")
+                sparQL = "SELECT ?cidLabel ?authortitleLabel WHERE {?cid wdt:P31 wd:"+q.Topic+".?cid wdt:P17 ?authortitle .SERVICE wikibase:label { bd:serviceParam wikibase:language 'en' . }}Limit 10";
+
+                 else if(q.CategName!="princely state of the British Raj")
+                sparQL = "SELECT ?cidLabel ?authortitleLabel WHERE {?cid wdt:P31 wd:"+q.Topic+".?cid wdt:P17 ?authortitle .SERVICE wikibase:label { bd:serviceParam wikibase:language 'en' . }}Limit 10";
+
+                 else if(q.CategName!="princely state of the British Raj")
+                sparQL = "SELECT ?cidLabel ?authortitleLabel WHERE {?cid wdt:P31 wd:"+q.Topic+".?cid wdt:P17 ?authortitle .SERVICE wikibase:label { bd:serviceParam wikibase:language 'en' . }}Limit 10";
+
+                 else if(q.CategName!="princely state of the British Raj")
+                sparQL = "SELECT ?cidLabel ?authortitleLabel WHERE {?cid wdt:P31 wd:"+q.Topic+".?cid wdt:P17 ?authortitle .SERVICE wikibase:label { bd:serviceParam wikibase:language 'en' . }}Limit 10";
+
+                 else if(q.CategName!="princely state of the British Raj")
+                sparQL = "SELECT ?cidLabel ?authortitleLabel WHERE {?cid wdt:P31 wd:"+q.Topic+".?cid wdt:P17 ?authortitle .SERVICE wikibase:label { bd:serviceParam wikibase:language 'en' . }}Limit 10";
+
+                Task<List<universal_object>> dataReturns = System.Threading.Tasks.Task<string>.Run(() => GetQuestionData_others(sparQL).Result);
+                List<universal_object> quesReviewList = dataReturns.Result;
+                Console.WriteLine(quesReviewList.Count+"aaaaaaaaaaaaaaaaaa");
+                List<Questions> qL = new List<Questions>();
+                
+                List<string> books_etc_options = GenerateOptions1(q);
+                
+                for(int i=0; i<quesReviewList.Count; i++){
+                    Questions ques = new Questions();
+                    if(q.CategName=="Book")
+                    ques.QuestionGiven = "Who is the author of "+quesReviewList[i].mainobject+"?";
+                    else if(q.CategName=="princely state of the British Raj")
+                    {
+                    ques.QuestionGiven = " "+quesReviewList[i].mainobject+" belongs to which country ?";
+                    Console.WriteLine("qqqqqqqqqqqqqqqqqqqqq");
+                    }
+                    else if(q.CategName=="state of the United States")
+                    ques.QuestionGiven = " "+quesReviewList[i].mainobject+" is named after ?";
+                    else if(q.CategName=="business")
+                    {
+                    Console.WriteLine("qqqqqqqqqqqqqqqqqqqqq");
+                    ques.QuestionGiven = "When was "+quesReviewList[i].mainobject+" established ?";
+                    }
+                    ques.Topic = q.TopicName;
+                    ques.Categ = q.CategName;
+                    //qL.Add(ques);
+                    context.QuestionsT.Add(ques);
+                    Options op = new Options();
+                    op.IsCorrect=true;
+                    op.QuestionsId=ques.QuestionsId;
+                    op.OptionGiven=quesReviewList[i].predicate; 
+                    context.OptionsT.Add(op);
+                    List<int> randomNumber = getRandonNumber(0, books_etc_options.Count-1, optionNumber+2);
+                    for(int j=0;j<3;j++)
+                    {
+                        Options op1 = new Options();
+                        op1.IsCorrect=false;
+                        op1.QuestionsId=ques.QuestionsId;
+                        // if(books_etc_options[randomNumber[k]]!=op.OptionGiven)
+                        // {
+                        op1.OptionGiven = books_etc_options[randomNumber[j]];
+                        // j++;
+                        context.OptionsT.Add(op1);
+                        //}
+                        // k++;
+                    }  
+                }
+                //context.QuestionsT.AddRange(qL);
+                context.SaveChanges();
+                Console.WriteLine("quyuqywuqywuqyw");
+                return true;
+            }
+            return false;
+        }
+        public List<string> GenerateOptions1(QuizRTTemplate q) { // For generating options other than Occupation
+            if(q.TopicName=="Book")
+            sparQL = "SELECT ?cid ?options WHERE {?cid wdt:P106 wd:Q482980. OPTIONAL {?cid rdfs:label ?options filter (lang(?options) = 'en') . }}Limit "+NumberOfQuestions*10+"";
+            else if(q.TopicName=="princely state of the British Raj")
+            sparQL = "SELECT ?cid ?options WHERE {?cid wdt:P31 wd:Q6256. OPTIONAL {?cid rdfs:label ?options filter (lang(?options) = 'en') . }}Limit "+NumberOfQuestions*10+"";
+            else if(q.TopicName=="state of the United States")  
+            sparQL = "SELECT ?cid ?options WHERE {?cid wdt:P166/wdt:P31 wd:Q7191. OPTIONAL {?cid rdfs:label ?options filter (lang(?options) = 'en') . }}Limit "+NumberOfQuestions*10+"";
+            else if(q.TopicName=="business")  
+            sparQL = "SELECT DISTINCT ?person ?personLabel ?options WHERE {?person wdt:P31 wd:Q3918.?person wdt:P571 ?options SERVICE wikibase:label {bd:serviceParam wikibase:language '[AUTO_LANGUAGE],en' .}}Limit "+NumberOfQuestions*10+"";
+            Task<List<string>> dataReturns = System.Threading.Tasks.Task<string>.Run(() => GetOptionData(sparQL).Result);
+            List<string> optionReviewList = dataReturns.Result;
+            return optionReviewList;
+        }
+        async Task<List<universal_object>> GetQuestionData_others(string sparQL){ // Generating question related to some object other than occupation
+            List<universal_object> universal_list_objects = new List<universal_object>();
+            string baseUrl = "https://query.wikidata.org/sparql?query="+sparQL+"&format=json";
+            //The 'using' will help to prevent memory leaks.
+            //Create a new instance of HttpClient
+            using (HttpClient client = new HttpClient())
+            //Setting up the response...         
+            using (HttpResponseMessage res = await client.GetAsync(baseUrl))
+            using (HttpContent content = res.Content){
+                string data = await content.ReadAsStringAsync();
+                // JObject data = await content.ReadAsAsync<JObject>();
+                //Console.WriteLine(data);
+                JObject json = JObject.Parse(data);
+                JArray j  = ((JArray)json["results"]["bindings"]);
+                if (data != null){
+                    //Console.WriteLine((j[1]["authortitleLabel"]["value"]));
+                    for(int i=0; i < j.Count ; i++){ 
+                        universal_object s_universe = new universal_object(); 
+                        //Console.WriteLine((j[i]["cidLabel"]["value"].ToString())+"aaaaa");
+                        s_universe.mainobject = (j[i]["cidLabel"]["value"].ToString());
+                        //Console.WriteLine((j[i]["authortitleLabel"]["value"])+"sssssss");
+                        s_universe.predicate = (string)j[i]["authortitleLabel"]["value"];
+                        universal_list_objects.Add(s_universe);
+                    }
+                    
+                    return universal_list_objects;
+                }
+                return new List<universal_object>();
+            }
         }
         async Task<List<string>> GetQuestionData(string sparQL){
             string baseUrl = "https://query.wikidata.org/sparql?query="+sparQL+"&format=json";

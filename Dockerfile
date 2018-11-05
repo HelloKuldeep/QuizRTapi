@@ -25,19 +25,19 @@
 
 # # FROM microsoft/aspnetcore-build:lts
 
-# FROM microsoft/dotnet
-# COPY . /app
-# WORKDIR /app
-# RUN ["dotnet", "restore"]
-# RUN ["dotnet", "build"]
-# EXPOSE 80/tcp
-# RUN chmod +x ./entrypoint.sh
-# CMD /bin/bash ./entrypoint.sh
+FROM microsoft/dotnet
+COPY . /app
+WORKDIR /app
+RUN ["dotnet", "restore"]
+RUN ["dotnet", "build"]
+EXPOSE 80/tcp
+RUN chmod +x ./entrypoint.sh
+CMD /bin/bash ./entrypoint.sh
 
 ##########################
 
-FROM microsoft/dotnet:runtime
+# FROM microsoft/dotnet:runtime
 
-WORKDIR /dotnetapp
-COPY out .
-ENTRYPOINT ["dotnet", "QuizRTapi.dll"]
+# WORKDIR /dotnetapp
+# COPY out .
+# ENTRYPOINT ["dotnet", "QuizRTapi.dll"]
