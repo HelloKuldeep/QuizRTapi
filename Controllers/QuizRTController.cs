@@ -38,6 +38,7 @@ namespace QuizRTapi.Controllers
         // POST api/values
         [HttpPost]
         public IActionResult Post([FromBody] Object q){
+            Console.WriteLine(q);
             if( quizRTRepo.PostQuery(q) ){
                 return Created("/api/quizrt",q);
             }

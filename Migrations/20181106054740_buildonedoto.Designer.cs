@@ -9,8 +9,8 @@ using QuizRT.Models;
 namespace QuizRTapi.Migrations
 {
     [DbContext(typeof(QuizRTContext))]
-    [Migration("20181105112831_MyFirstMigration")]
-    partial class MyFirstMigration
+    [Migration("20181106054740_buildonedoto")]
+    partial class buildonedoto
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
